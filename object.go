@@ -1,4 +1,4 @@
-package server
+package main
 
 type Object struct {
 	ObjType int8

@@ -24,6 +24,7 @@ func main() {
 	}
 
 	InitServer()
+	go RunServer()
 
 	c := make(chan os.Signal)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGUSR1, syscall.SIGUSR2)

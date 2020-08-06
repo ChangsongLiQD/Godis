@@ -1,7 +1,4 @@
-package cmd
+package main
 
 //hardcode table   struct redisCommand redisCommandTable[]
-
-func populateCommandTable(){
-
-}
+type Command func(c *Client, s *Server)

@@ -14,6 +14,11 @@ func NewDatabase() *Database {
 	}
 }
 
+func (db *Database) GetKey(key string) *Object {
+	data, _ := db.Dict[key]
+	return data
+}
+
 func (db *Database) SetKey(key string, obj *Object) {
 	db.Dict[key] = obj
 }

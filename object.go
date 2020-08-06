@@ -3,6 +3,10 @@ package main
 const C_ERR = -1
 const C_OK = 0
 
+var (
+	OkResp = []byte("0")
+)
+
 const ObjectTypeString = 0
 const OBJ_LIST = 1
 const OBJ_SET = 2
@@ -26,8 +30,8 @@ type Object struct {
 }
 
 // CreateObject 创建特定类型的object结构
-func CreateObject(t int8, ptr interface{}) (o *Object) {
-	o = new(Object)
+func CreateObject(t int8, ptr interface{}) (o Object) {
+	o = Object{}
 	o.ObjType = t
 	o.Ptr = ptr
 	return

@@ -24,7 +24,7 @@ type Server struct {
 
 type Client struct {
 	Cmd   Command
-	Argv  []*Object
+	Argv  []Object
 	Argc  int
 	Query string
 	Buff  []byte
@@ -32,7 +32,7 @@ type Client struct {
 
 func InitServer() {
 	server.Pid = os.Getpid()
-	server.Port = 6379
+	server.Port = 6388
 	server.Db = NewDatabase()
 	server.populateCommandTable()
 }
@@ -68,17 +68,32 @@ func Handle(conn net.Conn) {
 		// Process query
 		err = client.ProcessInput()
 		if err != nil {
-			log.Println("conn.Read error:", err)
+			log.Println("client.ProcessInput error:", err)
 			continue
 		}
 		// Process command and Response
 		client.HandleCmd()
+		Response(conn, client)
+	}
+}
+
+func Response(conn net.Conn, c *Client) {
+	var err error
+	if len(c.Buff) > 0 {
+		_, err = conn.Write(c.Buff)
+	} else {
+		_, err = conn.Write([]byte("(nil)"))
+	}
+
+	if err != nil {
+		log.Println("conn write failed: ", err)
 	}
 }
 
 func (s *Server) populateCommandTable() {
 	s.Commands = map[string]Command{
 		"get": GetCommand,
+		"set": SetCommand,
 	}
 }
 
@@ -94,6 +109,7 @@ func NewClient() *Client {
 }
 
 func (cl *Client) ReadQuery(conn net.Conn) error {
+	cl.Buff = make([]byte, 512)
 	n, err := conn.Read(cl.Buff)
 	if err != nil {
 		log.Println("conn.Read error:", err)
@@ -106,7 +122,13 @@ func (cl *Client) ReadQuery(conn net.Conn) error {
 }
 
 func (cl *Client) ProcessInput() error {
+	cl.Query = strings.TrimRight(cl.Query, "\n")
 	inputs := strings.Split(cl.Query, " ")
+	cl.Argc = len(inputs)
+	if cl.Argc < 2 {
+		return errors.New("invalid command: check usage")
+	}
+	cl.Argv = make([]Object, cl.Argc-1)
 
 	for idx, input := range inputs {
 
@@ -121,13 +143,11 @@ func (cl *Client) ProcessInput() error {
 		}
 	}
 
-	cl.Argc = len(inputs)
-
 	return nil
 }
 
 func (cl *Client) HandleCmd() {
-	//cl.Cmd(cl, server)
+	cl.Cmd(cl, server)
 }
 
 func SmoothExit() {

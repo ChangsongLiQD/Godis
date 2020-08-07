@@ -9,19 +9,24 @@ import (
 	"strings"
 )
 
+const (
+	DefaultIp   = "127.0.0.1"
+	DefaultPort = 6666
+)
+
 var address string
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	address = fmt.Sprintf("%s:%d", DefaultIp, DefaultPort)
-	tcpAddr, err := net.ResolveTCPAddr("tpc4", address)
+	tcpAddr, err := net.ResolveTCPAddr("tcp", address)
 	clientCheckError(err)
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	conn, err := net.DialTCP("tcp4", nil, tcpAddr)
 	clientCheckError(err)
 	defer conn.Close()
+	printConsole()
 
 	for {
-		printConsole()
 		cmd, err := reader.ReadString('\n')
 		clientCheckError(err)
 		cmd = strings.Trim(cmd, "\n")
@@ -55,11 +60,11 @@ func clientCheckError(err error) {
 }
 
 func printConsole(infos ...string) {
-	fmt.Print(address + "> ")
 	if len(infos) > 0 {
 		for _, info := range infos {
 			fmt.Print(info)
 		}
 		fmt.Println()
 	}
+	fmt.Print(address + "> ")
 }

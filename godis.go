@@ -11,8 +11,6 @@ import (
 
 var server = &Server{}
 
-const AppVersion = "Godis 0.1"
-
 type Server struct {
 	Pid            int
 	Port           int
@@ -32,13 +30,13 @@ type Client struct {
 
 func InitServer() {
 	server.Pid = os.Getpid()
-	server.Port = 6388
+	server.Port = DefaultPort
 	server.Db = NewDatabase()
 	server.populateCommandTable()
 }
 
 func RunServer() {
-	addr := fmt.Sprintf("127.0.0.1:%d", server.Port)
+	addr := fmt.Sprintf("%s:%d", DefaultIp, server.Port)
 	netListen, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("Listen tcp failed: %v", err)

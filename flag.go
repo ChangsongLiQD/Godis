@@ -2,11 +2,7 @@ package main
 
 import "flag"
 
-const (
-	DefaultPort = 6666
-)
-
-func GetFlagSet() *flag.FlagSet {
+func GetServerFlagSet() *flag.FlagSet {
 	flagSet := flag.NewFlagSet("godis", flag.ExitOnError)
 
 	flagSet.Bool("version", false, "print version string")

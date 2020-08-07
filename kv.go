@@ -3,7 +3,7 @@ package main
 func SetCommand(c *Client, s *Server) {
 	if (c.Argc-1)%2 != 0 {
 		// Response error
-		c.Buff = []byte("invalid set usage")
+		c.Buff = GetErrorResponse([]byte("invalid set usage"))
 		return
 	}
 
@@ -13,7 +13,7 @@ func SetCommand(c *Client, s *Server) {
 		s.Db.SetKey(key, obj)
 	}
 
-	c.Buff = OkResp
+	c.Buff = GetStringResponse(RespOk)
 }
 
 func GetCommand(c *Client, s *Server) {
@@ -23,8 +23,8 @@ func GetCommand(c *Client, s *Server) {
 
 	data := s.Db.GetKey(c.Argv[0].Ptr.(string))
 	if data != nil {
-		c.Buff = []byte(data.Ptr.(string))
+		c.Buff = GetBulkBytesResponse([]byte(data.Ptr.(string)))
 	} else {
-		c.Buff = []byte("wtf")
+		c.Buff = nil
 	}
 }

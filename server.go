@@ -13,7 +13,7 @@ import (
 func main() {
 	rand.Seed(time.Now().Unix())
 
-	fs := GetFlagSet()
+	fs := GetServerFlagSet()
 	if err := fs.Parse(os.Args[1:]); err != nil {
 		panic(err)
 	}

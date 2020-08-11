@@ -49,6 +49,8 @@ func RunServer() {
 		log.Fatalf("Listen tcp failed: %v", err)
 	}
 
+	defer netListen.Close()
+
 	for {
 		conn, err := netListen.Accept()
 		if err != nil {
@@ -58,8 +60,6 @@ func RunServer() {
 
 		go Handle(conn)
 	}
-
-	defer netListen.Close()
 }
 
 func Handle(conn net.Conn) {
@@ -87,7 +87,7 @@ func Response(conn net.Conn, c *Client) {
 	if len(c.Buff) > 0 {
 		_, err = conn.Write(c.Buff)
 	} else {
-		_, err = conn.Write(GetStringResponse(RespNil))
+		_, err = conn.Write(RespNil)
 	}
 
 	if err != nil {
@@ -99,6 +99,7 @@ func (s *Server) populateCommandTable() {
 	s.Commands = map[string]Command{
 		"get": GetCommand,
 		"set": SetCommand,
+		"del": DelCommand,
 	}
 }
 
@@ -138,7 +139,7 @@ func (cl *Client) ProcessInput() error {
 	for idx, input := range inputs {
 
 		if idx == 0 {
-			if cmd, exists := server.getCommand(input); exists {
+			if cmd, exists := server.getCommand(strings.ToLower(input)); exists {
 				cl.Cmd = cmd
 			} else {
 				return errors.New("invalid command")

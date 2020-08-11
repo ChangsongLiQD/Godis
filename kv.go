@@ -15,11 +15,11 @@ func SetCommand(c *Client, s *Server) {
 		}
 	})
 
-	c.Buff = GetStringResponse(RespOk)
+	c.Buff = RespOk
 }
 
 func GetCommand(c *Client, s *Server) {
-	if c.Argc > 2 {
+	if c.Argc != 2 {
 		c.Buff = []byte("invalid get usage")
 	}
 

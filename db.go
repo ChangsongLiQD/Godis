@@ -23,6 +23,14 @@ func (db *Database) SetKey(key string, obj *Object) {
 	db.Dict[key] = obj
 }
 
+func (db *Database) DelKey(key string) bool {
+	_, exists := db.Dict[key]
+	if exists {
+		delete(db.Dict, key)
+	}
+	return exists
+}
+
 func (db *Database) ExistsKey(key string) bool {
 	_, exists := db.Dict[key]
 	return exists

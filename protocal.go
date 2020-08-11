@@ -16,8 +16,11 @@ const (
 )
 
 var (
-	RespNil = []byte("(nil)")
-	RespOk  = []byte("OK")
+	RespOk  = []byte("+OK\r\n")
+	RespNil = []byte("$-1\r\n")
+
+	RespIntSuccess = []byte(":1\r\n")
+	RespIntFail    = []byte(":0\r\n")
 )
 
 type Resp struct {

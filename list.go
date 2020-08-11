@@ -1,13 +1,13 @@
 package main
 
-type listNode struct {
-	prev  *listNode
-	next  *listNode
+type Node struct {
+	prev  *Node
+	next  *Node
 	value interface{}
 }
 
 type List struct {
-	head *listNode
-	tail *listNode
+	head *Node
+	tail *Node
 	len  int
 }

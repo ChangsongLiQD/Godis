@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	RespNil = []byte("nil")
+	RespNil = []byte("(nil)")
 	RespOk  = []byte("OK")
 )
 

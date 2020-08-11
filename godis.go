@@ -87,7 +87,7 @@ func Response(conn net.Conn, c *Client) {
 	if len(c.Buff) > 0 {
 		_, err = conn.Write(c.Buff)
 	} else {
-		_, err = conn.Write([]byte("(nil)"))
+		_, err = conn.Write(GetStringResponse(RespNil))
 	}
 
 	if err != nil {

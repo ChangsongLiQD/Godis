@@ -12,6 +12,7 @@ func SetCommand(c *Client, s *Server) {
 			key := c.Argv[i].Ptr.(string)
 			obj := &c.Argv[i+1]
 			s.Db.SetKey(key, obj)
+			s.Db.DelKeyExpire(key)
 		}
 	})
 
@@ -25,7 +26,12 @@ func GetCommand(c *Client, s *Server) {
 
 	var data *Object
 	DoProcess(func() {
-		data = s.Db.GetKey(c.Argv[0].Ptr.(string))
+		key := c.Argv[0].Ptr.(string)
+		data = s.Db.GetKey(key)
+		if data != nil && s.Db.CheckExpireValid(key) == KeyExpired {
+			LazyGarbageCollect(s.Db, key)
+			data = nil
+		}
 	})
 
 	if data != nil {

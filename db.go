@@ -1,6 +1,14 @@
 package main
 
-import "time"
+import (
+	"time"
+)
+
+const (
+	KeyExpireNo = -1
+	KeyExpired  = 0
+	KeyExpiring = 1
+)
 
 type ExpireTime int64
 type Dictionary map[string]*Object
@@ -35,9 +43,35 @@ func (db *Database) DelKey(key string) bool {
 	return exists
 }
 
+func (db *Database) DelKeyWithExpire(key string) bool {
+	result := db.DelKey(key)
+	if result {
+		db.DelKeyExpire(key)
+	}
+
+	return result
+}
+
+func (db *Database) CheckExpireValid(key string) int {
+	ttl, exist := db.Expires[key]
+	if !exist {
+		return KeyExpireNo
+	}
+
+	if ttl > ExpireTime(time.Now().UnixNano()) {
+		return KeyExpiring
+	}
+
+	return KeyExpired
+}
+
 func (db *Database) ExistsKey(key string) bool {
 	_, exists := db.Dict[key]
 	return exists
+}
+
+func (db *Database) DelKeyExpire(key string) {
+	delete(db.Expires, key)
 }
 
 func (db *Database) SetKeyExpireTimeBySeconds(key string, expire int64) bool {
@@ -55,5 +89,5 @@ func (db *Database) setKeyExpireTime(key string, expire ExpireTime) {
 }
 
 func getExpireTimeBySeconds(second int64) ExpireTime {
-	return ExpireTime(time.Now().UnixNano() + second*1000)
+	return ExpireTime(time.Now().UnixNano() + second*1000000000)
 }

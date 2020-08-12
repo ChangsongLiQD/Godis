@@ -1,6 +1,8 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func DelCommand(c *Client, s *Server) {
 	if c.Argc != 2 {
@@ -9,7 +11,8 @@ func DelCommand(c *Client, s *Server) {
 
 	var result bool
 	DoProcess(func() {
-		result = s.Db.DelKey(c.Argv[0].Ptr.(string))
+		key := c.Argv[0].Ptr.(string)
+		result = s.Db.DelKeyWithExpire(key)
 	})
 
 	c.Buff = GetIntResultResponse(result)
@@ -22,16 +25,16 @@ func ExpireCommand(c *Client, s *Server) {
 	var result bool
 	var err error
 	DoProcess(func() {
+		time, parseErr := strconv.ParseInt(c.Argv[1].Ptr.(string), 10, 64)
+		if parseErr != nil {
+			err = parseErr
+			return
+		}
+
 		key := c.Argv[0].Ptr.(string)
 		exist := s.Db.ExistsKey(key)
 		if !exist {
 			result = false
-			return
-		}
-
-		time, parseErr := strconv.ParseInt(c.Argv[1].Ptr.(string), 10, 64)
-		if parseErr != nil {
-			err = parseErr
 			return
 		}
 

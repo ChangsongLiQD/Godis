@@ -1,16 +1,20 @@
 package main
 
+import "time"
+
+type ExpireTime int64
 type Dictionary map[string]*Object
+type ExpireDict map[string]ExpireTime
 
 type Database struct {
-	Dict   Dictionary
-	Expire Dictionary
+	Dict    Dictionary
+	Expires ExpireDict
 }
 
 func NewDatabase() *Database {
 	return &Database{
-		map[string]*Object{},
-		map[string]*Object{},
+		Dict:    map[string]*Object{},
+		Expires: map[string]ExpireTime{},
 	}
 }
 
@@ -34,4 +38,22 @@ func (db *Database) DelKey(key string) bool {
 func (db *Database) ExistsKey(key string) bool {
 	_, exists := db.Dict[key]
 	return exists
+}
+
+func (db *Database) SetKeyExpireTimeBySeconds(key string, expire int64) bool {
+	if expire > 0 {
+		et := getExpireTimeBySeconds(expire)
+		db.setKeyExpireTime(key, et)
+		return true
+	}
+
+	return false
+}
+
+func (db *Database) setKeyExpireTime(key string, expire ExpireTime) {
+	db.Expires[key] = expire
+}
+
+func getExpireTimeBySeconds(second int64) ExpireTime {
+	return ExpireTime(time.Now().UnixNano() + second*1000)
 }

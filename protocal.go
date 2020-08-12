@@ -43,3 +43,11 @@ func GetBulkBytesResponse(b []byte) []byte {
 	resp := Resp{Type: TypeBulkBytes, Value: b}
 	return Encode(resp)
 }
+
+func GetIntResultResponse(result bool) []byte {
+	if result {
+		return RespIntSuccess
+	} else {
+		return RespIntFail
+	}
+}

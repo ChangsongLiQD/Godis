@@ -97,9 +97,10 @@ func Response(conn net.Conn, c *Client) {
 
 func (s *Server) populateCommandTable() {
 	s.Commands = map[string]Command{
-		"get": GetCommand,
-		"set": SetCommand,
-		"del": DelCommand,
+		"get":    GetCommand,
+		"set":    SetCommand,
+		"del":    DelCommand,
+		"expire": ExpireCommand,
 	}
 }
 

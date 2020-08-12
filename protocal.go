@@ -16,8 +16,11 @@ const (
 )
 
 var (
-	RespNil = []byte("nil")
-	RespOk  = []byte("OK")
+	RespOk  = []byte("+OK\r\n")
+	RespNil = []byte("$-1\r\n")
+
+	RespIntSuccess = []byte(":1\r\n")
+	RespIntFail    = []byte(":0\r\n")
 )
 
 type Resp struct {
@@ -39,4 +42,12 @@ func GetErrorResponse(b []byte) []byte {
 func GetBulkBytesResponse(b []byte) []byte {
 	resp := Resp{Type: TypeBulkBytes, Value: b}
 	return Encode(resp)
+}
+
+func GetIntResultResponse(result bool) []byte {
+	if result {
+		return RespIntSuccess
+	} else {
+		return RespIntFail
+	}
 }

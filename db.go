@@ -88,6 +88,21 @@ func (db *Database) setKeyExpireTime(key string, expire ExpireTime) {
 	db.Expires[key] = expire
 }
 
+func (db *Database) getRandomExpireKeys(num int) ([]string, int) {
+	var keys []string
+	total := 0
+	for key := range db.Expires {
+		keys = append(keys, key)
+		total++
+
+		if total == num {
+			break
+		}
+	}
+
+	return keys, total
+}
+
 func getExpireTimeBySeconds(second int64) ExpireTime {
 	return ExpireTime(time.Now().UnixNano() + second*1000000000)
 }

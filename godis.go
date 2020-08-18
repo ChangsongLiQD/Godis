@@ -51,6 +51,9 @@ func RunServer() {
 
 	defer netListen.Close()
 
+	// start timer gc goroutine
+	go StartCollectGarbageByTime(server.Db)
+
 	for {
 		conn, err := netListen.Accept()
 		if err != nil {
